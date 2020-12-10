@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="hand">
+  <xacro:include filename="$(find realsense2_description)/urdf/_d415.urdf.xacro" />
+  
   <!-- safety_distance: Minimum safety distance in [m] by which the collision volumes are expanded and which is enforced during robot motions -->
-  <xacro:macro name="hand" params="connected_to:='' ns:='' rpy:='0 0 0' xyz:='0 0 0' safety_distance:=0">
+  <xacro:macro name="hand" params="connected_to:='' ns:='' rpy:='0 0 0' xyz:='0 0 0.005' safety_distance:=0">
     <xacro:unless value="${connected_to == ''}">
       <joint name="${ns}_hand_joint" type="fixed">
         <parent link="${connected_to}"/>
@@ -52,6 +54,24 @@
         </geometry>
       </collision>
     </link>
+    <link name="${ns}_cam_aruco_mount">
+      <visual>
+        <geometry>
+          <mesh filename="package://franka_description/meshes/visual/camera_aruco_mount.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </visual>
+    </link>
+    <link name="${ns}_realsense_hole_1"/>
+    <link name="${ns}_realsense_hole_2"/>
+    <link name="${ns}_realsense_hole_3"/>
+    <link name="${ns}_realsense_hole_4"/>
+    <link name="${ns}_aruco_center"/>
+
+    <xacro:sensor_d415 parent="${ns}_realsense_hole_4">
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+    </xacro:sensor_d415>
+
+
     <link name="${ns}_leftfinger">
       <visual>
         <geometry>
@@ -82,5 +102,36 @@
       <limit effort="20" lower="0.0" upper="0.04" velocity="0.2"/>
       <mimic joint="${ns}_finger_joint1" />
     </joint>
+    <joint name="${ns}_hand_mount_joint" type="fixed">
+      <parent link="${ns}_hand"/>
+      <child link="${ns}_cam_aruco_mount"/>
+      <origin xyz="0 0 0" rpy="0 ${pi} ${-pi/2}"/>
+    </joint>
+    <joint name="${ns}_mount_to_hole_1" type="fixed">
+      <parent link="${ns}_cam_aruco_mount"/>
+      <child link="${ns}_realsense_hole_1"/>
+      <origin xyz="0 0.07975 0.0168875" rpy="-${pi*120/180} 0 0"/>
+    </joint>
+    <joint name="${ns}_mount_to_hole_2" type="fixed">
+      <parent link="${ns}_cam_aruco_mount"/>
+      <child link="${ns}_realsense_hole_2"/>
+      <origin xyz="0 0.08475 0.02554775" rpy="-${pi*120/180} 0 0"/>
+    </joint>
+    <joint name="${ns}_mount_to_hole_3" type="fixed">
+      <parent link="${ns}_cam_aruco_mount"/>
+      <child link="${ns}_realsense_hole_3"/>
+      <origin xyz="0 0.08975 0.0342080" rpy="-${pi*120/180} 0 0"/>
+    </joint>
+    <joint name="${ns}_mount_to_hole_4" type="fixed">
+      <parent link="${ns}_cam_aruco_mount"/>
+      <child link="${ns}_realsense_hole_4"/>
+      <origin xyz="0 0.094750 0.0428682575" rpy="-${pi*120/180} 0 0"/>
+    </joint>
+    <joint name="${ns}_mount_to_aruco" type="fixed">
+      <parent link="${ns}_cam_aruco_mount"/>
+      <child link="${ns}_aruco_center"/>
+      <origin xyz="0 0.100 0.102" rpy="0 0 0"/>
+    </joint>
+
   </xacro:macro>
 </robot>
