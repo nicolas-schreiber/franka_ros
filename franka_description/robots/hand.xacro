@@ -130,7 +130,7 @@
     <joint name="${ns}_mount_to_aruco" type="fixed">
       <parent link="${ns}_cam_aruco_mount"/>
       <child link="${ns}_aruco_center"/>
-      <origin xyz="0 0.100 0.102" rpy="0 0 0"/>
+      <origin xyz="0 0.100 0.102" rpy="-${pi/2} 0 ${pi/2}"/>
     </joint>
 
   </xacro:macro>
